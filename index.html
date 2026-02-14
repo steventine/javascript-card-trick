@@ -5,25 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Mind Reader</title>
 <style>
-  body { font-family: system-ui, sans-serif; padding: 1rem; max-width: 32rem; margin: 0 auto; }
-  .picker { margin-bottom: 1rem; }
-  .picker-section { margin-bottom: 0.75rem; }
-  .picker-section label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 0.35rem; }
-  .rank-cards { display: flex; flex-direction: column; gap: 0.35rem; }
-  .rank-row { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-  .suit-cards { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  body { font-family: system-ui, sans-serif; padding: 0.5rem; max-width: 32rem; margin: 0 auto; }
+  h1 { margin: 0.2rem 0 0.35rem 0; font-size: 1.4rem; }
+  p { margin: 0.35rem 0; }
+  .picker { margin-bottom: 0.5rem; }
+  .picker-section { margin-bottom: 0.4rem; }
+  .picker-section label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 0.2rem; }
+  .rank-cards { display: flex; flex-direction: column; gap: 0.25rem; }
+  .rank-row { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+  .suit-cards { display: flex; gap: 0.25rem; flex-wrap: wrap; }
   .rank-card, .suit-card { width: 2.5rem; height: 3rem; border: 1px solid #ccc; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background: #fff; cursor: pointer; user-select: none; }
   .rank-card:hover, .suit-card:hover { border-color: #666; background: #f8f8f8; }
   .rank-card.selected, .suit-card.selected { border-color: #1a4d6d; border-width: 2px; background: #e8f4fc; }
   .suit-card.red { color: #c00; }
   .suit-card { font-size: 1.25rem; }
-  .add-row { margin-top: 0.75rem; }
-  .cards-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
-  .reset-row { margin-top: 1rem; }
-  .reset-row button { padding: 0.4rem 0.75rem; font-size: 1rem; cursor: pointer; }
-  footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.85rem; color: #666; }
+  .add-row { margin-top: 0.4rem; }
+  .cards-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 0.4rem 0; }
+  .reset-row { margin-top: 0.5rem; }
+  .reset-row button { padding: 0.35rem 0.6rem; font-size: 0.95rem; cursor: pointer; }
+  footer { margin-top: 1rem; padding-top: 0.5rem; font-size: 0.8rem; color: #666; }
   footer a { color: #1a4d6d; }
-  .pile { display: flex; gap: 0.5rem; flex-wrap: wrap; min-height: 5.5rem; }
+  .pile { display: flex; gap: 0.4rem; flex-wrap: wrap; min-height: 5rem; }
   .card-slot { width: 4rem; height: 5.5rem; border: 1px solid #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 0.25rem; font-size: 1.25rem; background: #fff; }
   .card-slot.empty { background: #f0f0f0; color: #999; font-size: 0.9rem; }
   .card-slot.red { color: #c00; }
