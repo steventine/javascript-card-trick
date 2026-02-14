@@ -19,6 +19,8 @@
   .suit-card { font-size: 1.25rem; }
   .add-row { margin-top: 0.75rem; }
   .cards-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+  .reset-row { margin-top: 1rem; }
+  .reset-row button { padding: 0.4rem 0.75rem; font-size: 1rem; cursor: pointer; }
   .pile { display: flex; gap: 0.5rem; flex-wrap: wrap; min-height: 5.5rem; }
   .card-slot { width: 4rem; height: 5.5rem; border: 1px solid #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 0.25rem; font-size: 1.25rem; background: #fff; }
   .card-slot.empty { background: #f0f0f0; color: #999; font-size: 0.9rem; }
@@ -30,7 +32,7 @@
   @keyframes pulse-border { 0%, 100% { box-shadow: 0 0 0 0 rgba(26, 77, 109, 0.5); } 50% { box-shadow: 0 0 0 6px rgba(26, 77, 109, 0.2); } }
   .card-back.revealed { background: #fff; cursor: default; font-size: 1.25rem; flex-direction: row; }
   .card-back.revealed.red { color: #c00; }
-  #add-btn { padding: 0.4rem 0.75rem; font-size: 1rem; cursor: pointer; }
+  .add-row button { padding: 0.4rem 0.75rem; font-size: 1rem; cursor: pointer; }
   #add-btn:disabled { cursor: not-allowed; opacity: 0.6; }
 </style>
 <script>
@@ -52,6 +54,22 @@ function addToPile() {
     el.onclick = revealFifth;
     el.title = "Click to reveal your hidden card";
   }
+}
+
+function reset() {
+  pile = [];
+  revealed = null;
+  selectedRank = 2;
+  selectedSuit = "c";
+  document.getElementById("add-btn").disabled = false;
+  var el = document.getElementById("fifth-card");
+  el.classList.remove("revealed", "clickable");
+  el.onclick = null;
+  el.innerHTML = "";
+  el.title = "Add 4 cards first";
+  renderRankCards();
+  renderSuitCards();
+  renderPile();
 }
 
 function setRank(r) {
@@ -221,6 +239,9 @@ function s2n(s) {
 <div class="cards-row">
   <div id="pile" class="pile"></div>
   <div id="fifth-card" class="card-back" title="Add 4 cards first"></div>
+</div>
+<div class="reset-row">
+  <button type="button" onclick="reset()">Reset</button>
 </div>
 
 <script>
