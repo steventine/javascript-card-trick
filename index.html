@@ -21,6 +21,8 @@
   .cards-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
   .reset-row { margin-top: 1rem; }
   .reset-row button { padding: 0.4rem 0.75rem; font-size: 1rem; cursor: pointer; }
+  footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.85rem; color: #666; }
+  footer a { color: #1a4d6d; }
   .pile { display: flex; gap: 0.5rem; flex-wrap: wrap; min-height: 5.5rem; }
   .card-slot { width: 4rem; height: 5.5rem; border: 1px solid #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 0.25rem; font-size: 1.25rem; background: #fff; }
   .card-slot.empty { background: #f0f0f0; color: #999; font-size: 0.9rem; }
@@ -243,6 +245,11 @@ function s2n(s) {
 <div class="reset-row">
   <button type="button" onclick="reset()">Reset</button>
 </div>
+
+<footer>
+  Adapted from Tim Muller's <a href="https://youtu.be/rkrjo4IIb1I" target="_blank" rel="noopener noreferrer">JavaScript Card Trick</a><br>
+  His original version is <a href="http://magic.tinefamily.com/index_tim.html" target="_blank" rel="noopener noreferrer">here</a>.
+</footer>
 
 <script>
 renderRankCards();
