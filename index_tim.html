@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Spooky mind reader</title>
+<script>
+function readMind() {
+  var r1 = parseInt(document.getElementById("r1").value, 10);
+  var r2 = parseInt(document.getElementById("r2").value, 10);
+  var r3 = parseInt(document.getElementById("r3").value, 10);
+  var r4 = parseInt(document.getElementById("r4").value, 10);
+  var s1 = document.getElementById("s1").value;
+  var s2 = document.getElementById("s2").value;
+  var s3 = document.getElementById("s3").value;
+  var s4 = document.getElementById("s4").value;
+ 
+  var s5 = s1;
+  var offset = orderOf(r2,s2,r3,s3,r4,s4);
+  var r5 = offset + parseInt(r1);
+  if (r5 >= 15) r5 = r5 - 13;
+  document.getElementById("result").innerHTML = "the " + r2t(r5) + " of " + s2t(s5) + "!";
+}
+ 
+function orderOf(r2,s2,r3,s3,r4,s4) {
+  if (compare(r2,s2, r3,s3)) {
+    // 2 > 3
+    if (compare(r2,s2, r4,s4)) {
+      //card 2 is largest
+      if (compare(r3,s3, r4,s4)) {
+        // 2 > 3 > 4
+        return 6;
+      } else {
+        // 2 > 4 > 3
+        return 5;
+      }
+    } else {
+      // 4 > 2 > 3
+      return 3;
+    }
+  } else {
+    // 3 > 2
+    if (compare(r3,s3, r4,s4)) {
+      // card 3 is largest
+      if (compare(r2,s2, r4,s4)) {
+        // 3 > 2 > 4
+        return 4;
+      } else {
+        // 3 > 4 > 2
+        return 2;
+      }
+    } else {
+      // 4 > 3 > 2
+      return 1;
+    }
+  }
+}
+function compare(r1, s1, r2, s2) {
+  if (r1 > r2) return 1;
+  if (r2 > r1) return 0;
+  if (s2n(s1) > s2n(s2)) return 1;
+  return 0;
+}
+function s2n(s) {
+  if (s == "c") return 1;
+  if (s == "h") return 2;
+  if (s == "s") return 3;
+  if (s == "d") return 4;
+}
+function r2t(r) {
+  if (r <= 10) return r;
+  if (r == 11) return "jack";
+  if (r == 12) return "queen";
+  if (r == 13) return "king";
+  if (r == 14) return "ace";
+}
+function s2t(s) {
+  if (s == "c") return "clubs";
+  if (s == "h") return "<a style='color:red;'>hearts</a>";
+  if (s == "s") return "spades";
+  if (s == "d") return "<a style='color:red;'>diamonds</a>";
+}
+</script>
+</head>
+<body>
+First visible card is:
+<select name="r1" id="r1">
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+  <option value="11">J</option>
+  <option value="12">Q</option>
+  <option value="13">K</option>
+  <option value="14">A</option>
+</select>
+<select name="s1" id="s1">
+  <option value="c">&clubs;</option>
+  <option value="h" style="color:red;">&hearts;</option>
+  <option value="s">&spades;</option>
+  <option value="d" style="color:red;">&diams;</option>
+</select><br />
+Second visible card is:
+<select name="r2" id="r2">
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+  <option value="11">J</option>
+  <option value="12">Q</option>
+  <option value="13">K</option>
+  <option value="14">A</option>
+</select>
+<select name="s2" id="s2">
+  <option value="c">&clubs;</option>
+  <option value="h" style="color:red;">&hearts;</option>
+  <option value="s">&spades;</option>
+  <option value="d" style="color:red;">&diams;</option>
+</select><br />
+Third visible card is:
+<select name="r3" id="r3">
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+  <option value="11">J</option>
+  <option value="12">Q</option>
+  <option value="13">K</option>
+  <option value="14">A</option>
+</select>
+<select name="s3" id="s3">
+  <option value="c">&clubs;</option>
+  <option value="h" style="color:red;">&hearts;</option>
+  <option value="s">&spades;</option>
+  <option value="d" style="color:red;">&diams;</option>
+</select><br />
+Final visible card is:
+<select name="r4" id="r4">
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+  <option value="11">J</option>
+  <option value="12">Q</option>
+  <option value="13">K</option>
+  <option value="14">A</option>
+</select>
+<select name="s4" id="s4">
+  <option value="c">&clubs;</option>
+  <option value="h" style="color:red;">&hearts;</option>
+  <option value="s">&spades;</option>
+  <option value="d" style="color:red;">&diams;</option>
+</select><br />
+<br />
+Your hidden card is <b><a id="result"><input type="button" onclick="readMind()" value="read my mind"></input></a></b>
+</body>
+</html>
