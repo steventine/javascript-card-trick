@@ -14,14 +14,14 @@ Tim's original version is available at [index_tim.html](https://magic.tinefamily
 
 The suit of the 5th card matches the suit of the first card
 
-The rank of the 5th card is incremented up from the rank of the first card based on the order of cards 2-5 (L=Lowest card, M=Middle card, H=Highest card):
+The rank of the 5th card is incremented up from the rank of the first card based on the order of cards 2-5:
 
-* Offset of 1 -> Cards 2-5 are ordered L-M-H
-* Offset of 2 -> Cards 2-5 are ordered L-H-M
-* Offset of 3 -> Cards 2-5 are ordered M-L-H
-* Offset of 4 -> Cards 2-5 are ordered M-H-L
-* Offset of 5 -> Cards 2-5 are ordered H-L-M
-* Offset of 6 -> Cards 2-5 are ordered H-M-L
+* Offset of 1 -> Cards 2-5 are ordered:  `Low  - Med  - High`
+* Offset of 2 -> Cards 2-5 are ordered:  `Low  - High - Med`
+* Offset of 3 -> Cards 2-5 are ordered:  `Med  - Low  - High`
+* Offset of 4 -> Cards 2-5 are ordered:  `Med  - High - Low`
+* Offset of 5 -> Cards 2-5 are ordered:  `High - Low  - Med`
+* Offset of 6 -> Cards 2-5 are ordered:  `High - Med  - Low`
 
 ## Local development
 
