@@ -2,19 +2,26 @@
 
 This is an implementation of the [Javascript Card Trick video](https://youtu.be/rkrjo4IIb1I) from  Dr Tim Muller  on [Computerphile](https://www.youtube.com/@Computerphile).
 
-The goal is to host his original implementation on a published GitHub Page along with an enhanced UI/UX (with help from Cursor).
+## Effect 
+Spectator selects five cards at random from a deck, tells the computer about four of them, and the computer predicts the fifth.
 
-## Hosted GitHub Page
+## Method
+Magician picks the order of the four cards given to the computer, thereby encoding the value of the fifth.
+
+## Goal of This Project
+The goal is to host Tim's original implementation on a published GitHub Page along with my version that has an enhanced UI/UX (with help from Cursor).
+
+## Hosted GitHub Pages
 
 My version with the enhanced UI/UX is available at [magic.tinefamily.com](https://magic.tinefamily.com)
 
-Tim's original version is available at [index_tim.html](https://magic.tinefamily.com/index_tim.html)
+Tim's original version is available at [magic.tinefamily.com/index_tim.html](https://magic.tinefamily.com/index_tim.html)
 
 ## 5th Card Logic
 
 The suit of the 5th card matches the suit of the first card
 
-The rank of the 5th card is incremented up from the rank of the first card based on the order of cards 2-5:
+The rank of the 5th card is incremented up from the rank of the first card based on the order of cards 2-5 (with Ace being high) and the CHaSeD suite order breaking ties:
 
 * Offset of 1 -> Cards 2-5 are ordered:  `Low  - Med  - High`
 * Offset of 2 -> Cards 2-5 are ordered:  `Low  - High - Med`
