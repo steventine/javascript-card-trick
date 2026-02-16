@@ -45,11 +45,22 @@ var revealed = null;
 var selectedRank = 2;
 var selectedSuit = "c";
 
+function selectedCardIsInPile() {
+  return pile.some(function (card) {
+    return card.rank === selectedRank && card.suit === selectedSuit;
+  });
+}
+
+function updateAddButtonState() {
+  var btn = document.getElementById("add-btn");
+  btn.disabled = pile.length >= 4 || selectedCardIsInPile();
+}
+
 function addToPile() {
-  if (pile.length >= 4) return;
+  if (pile.length >= 4 || selectedCardIsInPile()) return;
   pile.push({ rank: selectedRank, suit: selectedSuit });
   renderPile();
-  document.getElementById("add-btn").disabled = pile.length >= 4;
+  updateAddButtonState();
   if (pile.length === 4) {
     var el = document.getElementById("fifth-card");
     el.classList.remove("revealed");
@@ -65,7 +76,6 @@ function reset() {
   revealed = null;
   selectedRank = 2;
   selectedSuit = "c";
-  document.getElementById("add-btn").disabled = false;
   var el = document.getElementById("fifth-card");
   el.classList.remove("revealed", "clickable");
   el.onclick = null;
@@ -74,6 +84,7 @@ function reset() {
   renderRankCards();
   renderSuitCards();
   renderPile();
+  updateAddButtonState();
 }
 
 function setRank(rank) {
@@ -81,6 +92,7 @@ function setRank(rank) {
   document.querySelectorAll(".rank-card").forEach(function (el) {
     el.classList.toggle("selected", parseInt(el.getAttribute("data-rank"), 10) === rank);
   });
+  updateAddButtonState();
 }
 
 function setSuit(suit) {
@@ -88,6 +100,7 @@ function setSuit(suit) {
   document.querySelectorAll(".suit-card").forEach(function (el) {
     el.classList.toggle("selected", el.getAttribute("data-suit") === suit);
   });
+  updateAddButtonState();
 }
 
 // Get the unicode character for a suit
@@ -292,6 +305,7 @@ function suit2number(suit) {
 renderRankCards();
 renderSuitCards();
 renderPile();
+updateAddButtonState();
 </script>
 </body>
 </html>
