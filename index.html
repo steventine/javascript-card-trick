@@ -21,8 +21,11 @@
   .suit-card { font-size: 1.25rem; }
   .add-row { margin-top: 0.4rem; }
   .cards-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin: 0.4rem 0; }
-  .reset-row { margin-top: 0.5rem; }
-  .reset-row button { padding: 0.35rem 0.6rem; font-size: 0.95rem; cursor: pointer; }
+  .reset-row { margin-top: 2rem; }
+  .reset-row button { padding: 0.35rem 0.6rem; font-size: 0.95rem; cursor: pointer; border-radius: 4px; border: 1px solid #d0d0d0; background: #e8e8e8; color: #777; }
+  .reset-row button:hover { background: #ddd; color: #555; }
+  .reset-row button.revealed { border-color: #1a4d6d; background: #e8f4fc; color: #1a4d6d; }
+  .reset-row button.revealed:hover { background: #d0e8f4; }
   footer { margin-top: 1rem; padding-top: 0.5rem; font-size: 0.8rem; color: #666; }
   footer a { color: #1a4d6d; }
   .pile { display: flex; gap: 0.4rem; flex-wrap: wrap; min-height: 5rem; }
@@ -85,6 +88,7 @@ function reset() {
   renderSuitCards();
   renderPile();
   updateAddButtonState();
+  document.getElementById("reset-btn").classList.remove("revealed");
 }
 
 function setRank(rank) {
@@ -195,6 +199,7 @@ function revealFifth() {
   el.onclick = null;
   el.textContent = rankToShort(revealed.rank) + " " + suitChar(revealed.suit);
   if (revealed.suit === "h" || revealed.suit === "d") el.classList.add("red");
+  document.getElementById("reset-btn").classList.add("revealed");
 }
 
 // Use the suit of the card1 and add the calculated offset to the rank of the card1
@@ -292,7 +297,7 @@ function suit2number(suit) {
   <div id="fifth-card" class="card-back" title="Add 4 cards first"></div>
 </div>
 <div class="reset-row">
-  <button type="button" onclick="reset()">Reset</button>
+  <button type="button" id="reset-btn" onclick="reset()">Start Over</button>
 </div>
 
 <footer>
