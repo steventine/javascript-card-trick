@@ -82,7 +82,7 @@ function reset() {
   selectedRank = 2;
   selectedSuit = "c";
   var el = document.getElementById("fifth-card");
-  el.classList.remove("revealed", "clickable");
+  el.classList.remove("revealed", "clickable", "red");
   el.onclick = null;
   el.innerHTML = "";
   el.title = "Add 4 cards first";
