@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Algorithm Tests</title>
+<style>
+  body { font-family: system-ui, sans-serif; padding: 1rem; max-width: 40rem; margin: 0 auto; }
+  h1 { font-size: 1.4rem; }
+  .pass { color: green; }
+  .fail { color: red; font-weight: bold; }
+  .summary { margin-top: 1rem; font-weight: bold; font-size: 1.1rem; }
+</style>
+<script src="algorithm.js"></script>
+</head>
+<body>
+<h1>Algorithm Tests</h1>
+<div id="results"></div>
+<div class="summary" id="summary"></div>
+<script>
+var passed = 0;
+var failed = 0;
+var out = document.getElementById("results");
+
+function assert(description, actual, expected) {
+  var ok = actual === expected;
+  var el = document.createElement("div");
+  el.className = ok ? "pass" : "fail";
+  el.textContent = (ok ? "PASS" : "FAIL") + ": " + description +
+    (ok ? "" : " — expected " + JSON.stringify(expected) + ", got " + JSON.stringify(actual));
+  out.appendChild(el);
+  ok ? passed++ : failed++;
+}
+
+// --- suit2number ---
+assert("suit2number c=1", suit2number("c"), 1);
+assert("suit2number h=2", suit2number("h"), 2);
+assert("suit2number s=3", suit2number("s"), 3);
+assert("suit2number d=4", suit2number("d"), 4);
+assert("suit2number unknown=0", suit2number("x"), 0);
+
+// --- compare ---
+// Higher rank wins
+assert("compare: higher rank wins", compare(10, "c", 9, "c"), 1);
+assert("compare: lower rank loses", compare(9, "c", 10, "c"), 0);
+// Same rank: CHaSeD order (d > s > h > c)
+assert("compare: same rank, d beats s", compare(7, "d", 7, "s"), 1);
+assert("compare: same rank, s beats h", compare(7, "s", 7, "h"), 1);
+assert("compare: same rank, h beats c", compare(7, "h", 7, "c"), 1);
+assert("compare: same rank, c loses to d", compare(7, "c", 7, "d"), 0);
+// Equal cards
+assert("compare: identical cards = 0", compare(5, "h", 5, "h"), 0);
+
+// --- offsetFromCardOrder: all 6 permutations ---
+// Use 3♣ (low), 7♥ (med), J♠ (high) as the three ordering cards
+// offset 1: Low, Med, High  → cards in positions 2,3,4 are 3c, 7h, Js
+assert("offset 1 (Low Med High)",  offsetFromCardOrder(3,"c", 7,"h", 11,"s"), 1);
+// offset 2: Low, High, Med  → 3c, Js, 7h
+assert("offset 2 (Low High Med)",  offsetFromCardOrder(3,"c", 11,"s", 7,"h"), 2);
+// offset 3: Med, Low, High  → 7h, 3c, Js
+assert("offset 3 (Med Low High)",  offsetFromCardOrder(7,"h", 3,"c", 11,"s"), 3);
+// offset 4: Med, High, Low  → 7h, Js, 3c
+assert("offset 4 (Med High Low)",  offsetFromCardOrder(7,"h", 11,"s", 3,"c"), 4);
+// offset 5: High, Low, Med  → Js, 3c, 7h
+assert("offset 5 (High Low Med)",  offsetFromCardOrder(11,"s", 3,"c", 7,"h"), 5);
+// offset 6: High, Med, Low  → Js, 7h, 3c
+assert("offset 6 (High Med Low)",  offsetFromCardOrder(11,"s", 7,"h", 3,"c"), 6);
+
+// --- verify a few CHaSeD order offset calculations
+// offset 1: Low, Med, High  → 3c, 3h, 3s
+assert("offset 1 CHaSeD (Low Med High)",  offsetFromCardOrder(3,"c", 3,"h", 3,"s"), 1);
+// offset 6: High, Med, Low  → Jd, Js, 3h
+assert("offset 6 CHaSeD (High Med Low)",  offsetFromCardOrder(11,"d", 11,"s", 11,"h"), 6);
+
+
+// --- computeHiddenCard ---
+// Hidden card always has suit of card1, rank = card1.rank + offset (wrapping >14)
+
+// Basic: 5♦ + offset 1 → 6♦
+assert("computeHiddenCard rank",  computeHiddenCard(5,"d", 3,"c", 7,"h", 11,"s").rank5, 6);
+assert("computeHiddenCard suit",  computeHiddenCard(5,"d", 3,"c", 7,"h", 11,"s").suit5, "d");
+
+// Wrapping: K(13)♥ + offset 3 → 3♥  (13+3=16, 16-13=3)
+assert("computeHiddenCard wrap rank", computeHiddenCard(13,"h", 7,"h", 3,"c", 11,"s").rank5, 3);
+assert("computeHiddenCard wrap suit", computeHiddenCard(13,"h", 7,"h", 3,"c", 11,"s").suit5, "h");
+
+// Wrapping: A(14)♠ + offset 2 → 3♠  (14+2=16, 16-13=3)
+assert("computeHiddenCard A+2 wrap", computeHiddenCard(14,"s", 3,"c", 11,"s", 7,"h").rank5, 3);
+
+// No wrap: 9♣ + offset 6 → 2♣  (9+6=15, 15-13=2)
+assert("computeHiddenCard 9+6 wrap", computeHiddenCard(9,"c", 11,"s", 7,"h", 3,"c").rank5, 2);
+
+document.getElementById("summary").textContent =
+  passed + " passed, " + failed + " failed.";
+</script>
+</body>
+</html>

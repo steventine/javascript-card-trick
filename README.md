@@ -21,7 +21,7 @@ Tim's original version is available at [magic.tinefamily.com/index_tim.html](htt
 
 The suit of the 5th card matches the suit of the first card
 
-The rank of the 5th card is incremented up from the rank of the first card based on the order of cards 2-5 (with Ace being high) and the CHaSeD suite order breaking ties:
+The rank of the 5th card is incremented up from the rank of the first card based on the order of cards 2-5 (with Ace being high) and the CHaSeD suit order breaking ties (e.g. Diamonds is higher than Clubs):
 
 * Offset of 1 -> Cards 2-5 are ordered:  `Low  - Med  - High`
 * Offset of 2 -> Cards 2-5 are ordered:  `Low  - High - Med`
