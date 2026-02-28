@@ -120,7 +120,7 @@ function suitChar(suit) {
 
 function renderRankCards() {
   var numberRanks = [2, 3, 4, 5, 6, 7, 8, 9, 10];
-  var faceRanks = [11, 12, 13, 14];
+  var faceRanks = [11, 12, 13, 1];  // Ace is low (= 1)
   var container = document.getElementById("rank-cards");
   container.innerHTML = "";
   function addRow(ranks) {
@@ -177,13 +177,13 @@ function renderPile() {
   }
 }
 
-// Face cards to short string
+// Face cards to short string (Ace = 1 low)
 function rankToShort(rank) {
+  if (rank === 1) return "A";
   if (rank <= 10) return rank;
   if (rank === 11) return "J";
   if (rank === 12) return "Q";
   if (rank === 13) return "K";
-  if (rank === 14) return "A";
   return rank;
 }
 

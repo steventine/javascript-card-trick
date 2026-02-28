@@ -30,6 +30,8 @@ The rank of the 5th card is incremented up from the rank of the first card based
 * Offset of 5 -> Cards 2-5 are ordered:  `High - Low  - Med`
 * Offset of 6 -> Cards 2-5 are ordered:  `High - Med  - Low`
 
+Note: A is treated as low (i.e. value of 1) in determining the card order.
+
 ## Local development
 
 Open `index.html` in a browser

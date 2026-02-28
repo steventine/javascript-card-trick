@@ -3,8 +3,8 @@ function computeHiddenCard(rank1, suit1, rank2, suit2, rank3, suit3, rank4, suit
   var offset = offsetFromCardOrder(rank2, suit2, rank3, suit3, rank4, suit4);
   var rank5 = rank1 + offset;
 
-  //Loop around if the rank is greater than Ace
-  if (rank5 > 14) rank5 = rank5 - 13;
+  // Loop around if the rank is greater than King (Ace is low, so ranks are 1–13)
+  if (rank5 > 13) rank5 = rank5 - 13;
   return { rank5: rank5, suit5: suit1 };
 }
 

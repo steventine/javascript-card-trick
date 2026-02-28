@@ -83,8 +83,8 @@ assert("computeHiddenCard suit",  computeHiddenCard(5,"d", 3,"c", 7,"h", 11,"s")
 assert("computeHiddenCard wrap rank", computeHiddenCard(13,"h", 7,"h", 3,"c", 11,"s").rank5, 3);
 assert("computeHiddenCard wrap suit", computeHiddenCard(13,"h", 7,"h", 3,"c", 11,"s").suit5, "h");
 
-// Wrapping: A(14)♠ + offset 2 → 3♠  (14+2=16, 16-13=3)
-assert("computeHiddenCard A+2 wrap", computeHiddenCard(14,"s", 3,"c", 11,"s", 7,"h").rank5, 3);
+// Wrapping: K(13)♠ + offset 2 → 3♠  (13+2=15, 15-13=2)
+assert("computeHiddenCard K+2 wrap", computeHiddenCard(13,"s", 2,"c", 11,"s", 7,"h").rank5, 2);
 
 // No wrap: 9♣ + offset 6 → 2♣  (9+6=15, 15-13=2)
 assert("computeHiddenCard 9+6 wrap", computeHiddenCard(9,"c", 11,"s", 7,"h", 3,"c").rank5, 2);
