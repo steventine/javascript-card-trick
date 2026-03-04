@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Mind Reader — Voice</title>
+<style>
+  body { font-family: system-ui, sans-serif; padding: 0.5rem; max-width: 32rem; margin: 0 auto; }
+  h1 { margin: 0.2rem 0 0.35rem 0; font-size: 1.4rem; }
+  p { margin: 0.35rem 0; }
+  footer { margin-top: 1rem; padding-top: 0.5rem; font-size: 0.8rem; color: #666; }
+  footer a { color: #1a4d6d; }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: #e0e0e0;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+  .status-badge.listening { background: #e8f4fc; color: #1a4d6d; }
+  .status-badge.thinking  { background: #fff3cd; color: #856404; }
+  .status-badge.done      { background: #d4edda; color: #155724; }
+  .status-badge.error     { background: #f8d7da; color: #721c24; }
+
+  .mic-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 2px solid #1a4d6d;
+    background: #1a4d6d;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+  .mic-btn:hover:not(:disabled) { background: #15405a; }
+  .mic-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .transcript-box, .response-box {
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+  .transcript-box {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    font-size: 0.9rem;
+    color: #444;
+  }
+  .response-box {
+    background: #e8f4fc;
+    border: 1px solid #1a4d6d;
+    font-size: 1rem;
+    color: #1a4d6d;
+    font-style: italic;
+  }
+
+  .reset-btn {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid #1a4d6d;
+    background: #e8f4fc;
+    color: #1a4d6d;
+  }
+  .reset-btn:hover { background: #d0e8f4; }
+
+  .file-warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    padding: 0.75rem;
+    color: #856404;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .file-warning code {
+    background: rgba(0,0,0,0.07);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.85em;
+  }
+
+  .compat-warning {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    padding: 0.75rem;
+    color: #721c24;
+    font-size: 0.9rem;
+  }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<h1>AI Mind Reader — Voice</h1>
+<p>Speak the four cards the magician laid out and let Zarcon reveal the hidden fifth.</p>
+
+<div id="file-warning" class="file-warning hidden">
+  This page must be served over HTTP — browsers block API calls from
+  <code>file://</code> URLs. Run a local server:<br><br>
+  <code>python3 -m http.server 8080</code><br><br>
+  Then open <code>http://localhost:8080/voice.html</code>
+</div>
+
+<div id="compat-warning" class="compat-warning hidden">
+  Your browser does not support the Web Speech API. Try Chrome or Edge.
+</div>
+
+<div id="status" class="status-badge">Idle</div>
+<br>
+
+<button id="mic-btn" class="mic-btn" onclick="startListening()">🎤 Speak Your Cards</button>
+
+<div id="transcript-box" class="transcript-box hidden"></div>
+<div id="response-box" class="response-box hidden"></div>
+
+<button id="reset-btn" class="reset-btn hidden" onclick="resetUI()">Ask Again</button>
+
+<footer>
+  Adapted from Tim Muller's <a href="https://youtu.be/rkrjo4IIb1I" target="_blank" rel="noopener noreferrer">JavaScript Card Trick video</a>
+  (his original version is <a href="http://magic.tinefamily.com/index_tim.html" target="_blank" rel="noopener noreferrer">here)</a>.<br>
+  My code is available on <a href="https://github.com/steventine/javascript-card-trick" target="_blank" rel="noopener noreferrer">GitHub</a>.
+</footer>
+
+<script>
+// ---------------------------------------------------------------------------
+// Configuration — update after deploying API Gateway
+// ---------------------------------------------------------------------------
+const API_ENDPOINT = "https://3gjckb3xc4.execute-api.us-east-1.amazonaws.com/predict";
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+var recognition = null;
+var speaking = false;
+
+// ---------------------------------------------------------------------------
+// Init
+// ---------------------------------------------------------------------------
+(function init() {
+  if (window.location.protocol === 'file:') {
+    document.getElementById("file-warning").classList.remove("hidden");
+    document.getElementById("mic-btn").disabled = true;
+    return;
+  }
+
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    document.getElementById("compat-warning").classList.remove("hidden");
+    document.getElementById("mic-btn").disabled = true;
+    return;
+  }
+  recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onresult = function(e) {
+    var transcript = e.results[0][0].transcript;
+    showTranscript(transcript);
+    callLambda(transcript);
+  };
+
+  recognition.onerror = function(e) {
+    setStatus("error", "Error: " + e.error);
+    setMicEnabled(true);
+  };
+
+  recognition.onend = function() {
+    // If we ended without a result (e.g. silence), re-enable the button
+    if (!speaking) setMicEnabled(true);
+  };
+})();
+
+// ---------------------------------------------------------------------------
+// UI helpers
+// ---------------------------------------------------------------------------
+function setStatus(state, label) {
+  var el = document.getElementById("status");
+  el.className = "status-badge" + (state ? " " + state : "");
+  el.textContent = label || state.charAt(0).toUpperCase() + state.slice(1);
+}
+
+function setMicEnabled(enabled) {
+  document.getElementById("mic-btn").disabled = !enabled;
+}
+
+function showTranscript(text) {
+  var el = document.getElementById("transcript-box");
+  el.textContent = "\u201c" + text + "\u201d";
+  el.classList.remove("hidden");
+}
+
+function showResponse(text) {
+  var el = document.getElementById("response-box");
+  el.textContent = text;
+  el.classList.remove("hidden");
+}
+
+function resetUI() {
+  setStatus("", "Idle");
+  setMicEnabled(true);
+  speaking = false;
+  document.getElementById("transcript-box").classList.add("hidden");
+  document.getElementById("response-box").classList.add("hidden");
+  document.getElementById("reset-btn").classList.add("hidden");
+  speechSynthesis.cancel();
+}
+
+// ---------------------------------------------------------------------------
+// Speech capture
+// ---------------------------------------------------------------------------
+function startListening() {
+  if (!recognition) return;
+  speaking = false;
+  setStatus("listening", "Listening\u2026");
+  setMicEnabled(false);
+  document.getElementById("transcript-box").classList.add("hidden");
+  document.getElementById("response-box").classList.add("hidden");
+  document.getElementById("reset-btn").classList.add("hidden");
+  recognition.start();
+}
+
+// ---------------------------------------------------------------------------
+// Lambda call
+// ---------------------------------------------------------------------------
+async function callLambda(transcript) {
+  setStatus("thinking", "Thinking\u2026");
+  speaking = true;
+
+  try {
+    var res = await fetch(API_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transcript: transcript })
+    });
+
+    if (!res.ok) {
+      var errBody = await res.text();
+      throw new Error("HTTP " + res.status + ": " + errBody);
+    }
+
+    var data = await res.json();
+    var text = data.text || "The spirits are silent.";
+    var audio = data.audio || null;
+
+    setStatus("done", "Done");
+    showResponse(text);
+    document.getElementById("reset-btn").classList.remove("hidden");
+
+    speak(text, audio);
+
+  } catch (err) {
+    setStatus("error", "Error");
+    showResponse("Something went wrong: " + err.message);
+    document.getElementById("reset-btn").classList.remove("hidden");
+    speaking = false;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Text-to-speech (Polly-ready)
+// ---------------------------------------------------------------------------
+function speak(text, audio) {
+  if (audio) {
+    // Polly path: decode base64 MP3 → Web Audio API
+    var bytes = Uint8Array.from(atob(audio), function(c) { return c.charCodeAt(0); });
+    var ctx = new AudioContext();
+    ctx.decodeAudioData(bytes.buffer).then(function(buf) {
+      var src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start();
+      src.onended = function() { speaking = false; };
+    }).catch(function(err) {
+      console.error("Audio decode error:", err);
+      speaking = false;
+    });
+  } else {
+    // Browser TTS fallback
+    speechSynthesis.cancel();
+    var utt = new SpeechSynthesisUtterance(text);
+    utt.rate = 0.9;
+    utt.pitch = 0.8;
+    utt.onend = function() { speaking = false; };
+    speechSynthesis.speak(utt);
+  }
+}
+</script>
+</body>
+</html>

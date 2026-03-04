@@ -35,3 +35,65 @@ Note: A is treated as low (i.e. value of 1) in determining the card order.
 ## Local development
 
 Open `index.html` in a browser
+
+## Voice Interface (`voice.html`)
+
+A voice-driven version powered by AWS Lambda + Amazon Bedrock (Claude 3 Haiku). The performer speaks four cards aloud; Zarcon the AI magician predicts the hidden fifth.
+
+### Architecture
+
+```
+Phone mic → Web Speech API → voice.html
+  → POST transcript → API Gateway → Lambda (Node.js 20)
+    → Bedrock ConverseCommand (Claude 3 Haiku) with tool
+    → Lambda runs card algorithm → returns prediction
+  → voice.html speaks response via browser TTS
+```
+
+### Prerequisites
+
+- AWS CLI configured (`aws configure`)
+- Node.js 20+ via nvm (`nvm use 20`)
+- `zip` (`sudo apt install zip`)
+
+### Deploy
+
+```bash
+./scripts/deploy.sh
+```
+
+The script is safe to re-run. It will:
+
+1. `npm install` the Lambda dependencies and zip the package
+2. Create an IAM role with Bedrock + Lambda execution permissions
+3. Create or update the Lambda function (Node.js 20, 256 MB, 30 s timeout)
+4. Create an API Gateway HTTP API with CORS configured for `magic.tinefamily.com`
+5. Patch `voice.html` with the live API endpoint URL
+
+**One manual step:** Enable Bedrock model access in the AWS Console before invoking the function. The deploy script prints the direct link when it finishes.
+
+### Local testing
+
+Browsers block API calls from `file://` URLs. Serve the page locally instead:
+
+```bash
+python3 -m http.server 8080
+# then open http://localhost:8080/voice.html
+```
+
+### Test
+
+```bash
+curl -X POST <endpoint printed by deploy.sh> \
+  -H 'Content-Type: application/json' \
+  -d '{"transcript":"Ace of spades, three of hearts, jack of clubs, seven of diamonds"}'
+# Expected: {"text":"...dramatic prediction...","audio":null}
+```
+
+### Teardown
+
+```bash
+./scripts/teardown.sh
+```
+
+Deletes the Lambda function, IAM role, API Gateway, and local build artifacts. Restores the placeholder URL in `voice.html`.
