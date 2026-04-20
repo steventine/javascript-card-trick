@@ -127,9 +127,9 @@ const toolConfig = {
 };
 
 const system = [{
-  text: "You are Zarcon, a theatrical AI magician. Speak dramatically and briefly. " +
+  text: "You are a typical IA chatbot that will be used in a magic trick. Speak briefly and confidently. " +
         "When a spectator names their four cards, call predict_fifth_card immediately. " +
-        "Reveal the result with dramatic flair in 1–3 sentences. Never explain the algorithm."
+        "Reveal the result in a single sentence as an AI chatbot would answer a question. Never explain the algorithm."
 }];
 
 // ---------------------------------------------------------------------------
@@ -177,6 +177,7 @@ export const handler = async (event) => {
     }));
 
     // Agentic loop — Claude may call the tool one or more times
+    let lastPrediction = null;
     while (response.stopReason === "tool_use") {
       const assistantMsg = response.output.message;
       messages.push(assistantMsg);
@@ -186,7 +187,11 @@ export const handler = async (event) => {
         .map(b => {
           console.log("Tool input from Claude:", JSON.stringify(b.toolUse.input));
           const cards = b.toolUse.input.cards.map((c, i) => {
-            if (typeof c !== "string") throw new Error(`Card ${i} is not a string: ${JSON.stringify(c)}`);
+            if (typeof c !== "string"){
+              throw new Error(`Card ${i} is not a string: ${JSON.stringify(c)}`);
+            }else{
+              console.log(`Card ${i} is a string: ${c}`);
+            }
             return parseCardString(c);
           });
           const [c1, c2, c3, c4] = cards;
@@ -196,7 +201,9 @@ export const handler = async (event) => {
             c3.rank, c3.suit,
             c4.rank, c4.suit
           );
-          const prediction = `The hidden card is the ${rankToName(result.rank5)} of ${suitToName(result.suit5)}.`;
+          const prediction = `The next card is the ${rankToName(result.rank5)} of ${suitToName(result.suit5)}.`;
+          console.log("Prediction:", prediction);
+          lastPrediction = prediction;
           return {
             toolUseId: b.toolUse.toolUseId,
             content: [{ text: prediction }]
@@ -216,9 +223,12 @@ export const handler = async (event) => {
       }));
     }
 
+    // Use the algorithmically-computed prediction directly to avoid Claude
+    // hallucinating a different card when rephrasing the tool result.
     const text =
+      lastPrediction ??
       response.output.message.content.find(b => b.text)?.text ??
-      "The spirits are silent.";
+      "I can't believe that I'm going to say this, but I don't know..";
 
     return {
       statusCode: 200,

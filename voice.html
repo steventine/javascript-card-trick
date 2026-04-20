@@ -252,7 +252,7 @@ async function callLambda(transcript) {
     }
 
     var data = await res.json();
-    var text = data.text || "The spirits are silent.";
+    var text = data.text || "Umm, I actually don't know.";
     var audio = data.audio || null;
 
     setStatus("done", "Done");
